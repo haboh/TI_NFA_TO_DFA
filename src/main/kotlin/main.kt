@@ -22,11 +22,13 @@ class Node {
 fun buildDFA(nfa: NFA, curState: Set<Int>): Node {
     val maps = mutableMapOf<Int, MutableSet<Int>>()
     for (state in curState) {
-        for ((char, to) in nfa.sigma[state]) {
-            if (char !in maps) {
-                maps[char] = mutableSetOf(to)
-            } else {
-                maps[char]!!.add(to)
+        for (char in 0 until nfa.sigma[state].size) {
+            for (to in nfa.sigma[state][char]) {
+                if (char !in maps) {
+                    maps[char] = mutableSetOf(to)
+                } else {
+                    maps[char]!!.add(to)
+                }
             }
         }
     }
@@ -43,7 +45,7 @@ fun buildDFA(nfa: NFA, curState: Set<Int>): Node {
 }
 
 class DFA {
-    data class Edge(val from : Int, val symbol : Int, val to: Int)
+    data class Edge(val from: Int, val symbol: Int, val to: Int)
 
     var initialState = 0
     val acceptedStates = mutableSetOf<Int>()
@@ -91,17 +93,17 @@ fun main(args: Array<String>) {
     val automata = NFA(n, m, q0, F)
 
     val lines = file.readLines()
-    for (i in 0 until lines.size - 1) {
-        val (from, symbol, to) = lines[i].split(" ").map { it.toInt() }
+    for (element in lines) {
+        val (from, symbol, to) = element.split(" ").map { it.toInt() }
         automata.addTransition(from, symbol, to)
     }
-    val input = lines.last()
 
     val dfa = NFA_TO_DFA(automata)
-    val output = BufferedWriter(FileWriter("output.txt"))
+    val output = FileWriter("output.txt")
 
     dfa.sigma.forEach {
-        output.write("${1} ${2} ${3}".format(it.from, it.symbol, it.to))
-        output.newLine()
+        output.write(it.from.toString() + " " + it.symbol.toString() + " " + it.to.toString() + "\n")
     }
+
+    output.close()
 }
